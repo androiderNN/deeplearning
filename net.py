@@ -11,7 +11,7 @@ class TwoLayerNet():
             'W2': np.random.randn(hidden_size, output_size),
             'b2': np.random.randn(output_size)
         }
-        self.grad = {key:np.zeros_like(self.params[key].size) for key in self.params.keys()}
+        self.grad = {key:np.zeros_like(self.params[key], dtype=np.float64) for key in self.params.keys()}
 
         self.layer_names = ['affine1', 'relu1', 'affine2']
         self.layers = {
@@ -62,6 +62,22 @@ class TwoLayerNet():
         self.grad['W2'] = self.layers[self.layer_names[2]].dW
         self.grad['b2'] = self.layers[self.layer_names[2]].db
 
+def check_grad(x, t):
+    hidden_size = 3
+    layer_size = (x.shape[1], hidden_size, t.shape[1])
+    net = TwoLayerNet(layer_size)
+
+    net.numerical_gradient(x, t)
+    numeric_grad = net.grad.copy()
+    print('numeric\n', numeric_grad)
+
+    net.gradient(x, t)
+    grad = net.grad
+    print('\nbackpropagation\n', grad)
+
+    grad = {k:numeric_grad[k]-grad[k] for k in grad.keys()}
+    print('\ndiff\n', grad)
+
 def train(x, t, hidden_size=5, num_iter=10000):
     layer_size = (x.shape[1], hidden_size, t.shape[1])
     net = TwoLayerNet(layer_size)
@@ -86,4 +102,5 @@ if __name__=='__main__':
     b = np.random.randn(output_size)
     t = np.dot(x, W) + b
 
-    train(x, t)
+    check_grad(x, t)
+    # train(x, t)
