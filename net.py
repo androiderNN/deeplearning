@@ -55,7 +55,7 @@ class TwoLayerNet():
         diff = self.loss_fn.backward(diff)
 
         for layer_name in reversed(self.layer_names):
-            self.layers[layer_name].backward(diff)
+            diff = self.layers[layer_name].backward(diff)
         
         self.grad['W1'] = self.layers[self.layer_names[0]].dW
         self.grad['b1'] = self.layers[self.layer_names[0]].db
@@ -78,7 +78,6 @@ def train(x, t, hidden_size=5, num_iter=1000):
             print('iter', i+1, ':', net.loss)
 
 if __name__=='__main__':
-    print(1)
     input_size = 4
     output_size = 3
 
