@@ -21,6 +21,7 @@ class TwoLayerNet():
         }
 
         self.loss_fn = MSE()
+        self.loss = None
 
     def predict(self, x):
         for layer_name in self.layer_names:
@@ -35,18 +36,21 @@ class TwoLayerNet():
             for index, _ in np.ndenumerate(self.params[key]):
                 self.params[key][index] += h
                 y = self.predict(x)
-                loss_pl = self.loss_fn(y, t)
+                loss_pl = self.loss_fn.forward(y, t)
                 self.params = init_params
 
                 self.params[key][index] -= h
                 y = self.predict(x)
-                loss_mi = self.loss_fn(y, t)
+                loss_mi = self.loss_fn.forward(y, t)
                 self.params = init_params
 
                 grad = (loss_pl-loss_mi)/(2*h)
                 self.grad[key][index] = grad
 
-    def gradient(self):
+    def gradient(self, x, t):
+        y = self.predict(x)
+        self.loss = self.loss_fn.forward(y, t)
+
         diff = 1
         diff = self.loss_fn.backward(diff)
 
@@ -57,3 +61,30 @@ class TwoLayerNet():
         self.grad['b1'] = self.layers[self.layer_names[0]].db
         self.grad['W2'] = self.layers[self.layer_names[2]].dW
         self.grad['b2'] = self.layers[self.layer_names[2]].db
+
+def train(x, t, hidden_size=5, num_iter=1000):
+    layer_size = (x.shape[1], hidden_size, t.shape[1])
+    net = TwoLayerNet(layer_size)
+
+    lr = 0.001
+    
+    for i in range(num_iter):
+        net.gradient(x, t)
+        
+        for key in net.params.keys():
+            net.params[key] = lr*net.grad[key]
+        
+        if i%100==99:
+            print('iter', i+1, ':', net.loss)
+
+if __name__=='__main__':
+    print(1)
+    input_size = 4
+    output_size = 3
+
+    x = np.random.randn(100, input_size)
+    W = np.random.randn(input_size, output_size)
+    b = np.random.randn(output_size)
+    t = np.dot(x, W) + b
+
+    train(x, t)
