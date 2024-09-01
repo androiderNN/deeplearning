@@ -16,7 +16,7 @@ class Affine():
     def backward(self, diff):
         dx = np.dot(diff, self.W.T)
         self.dW = np.dot(self.x.T, diff)
-        self.db = np.mean(diff, axis=0)
+        self.db = np.mean(diff, axis=0)*self.x.shape[0]
         return dx
 
 class ReLU():
