@@ -62,20 +62,20 @@ class TwoLayerNet():
         self.grad['W2'] = self.layers[self.layer_names[2]].dW
         self.grad['b2'] = self.layers[self.layer_names[2]].db
 
-def train(x, t, hidden_size=5, num_iter=1000):
+def train(x, t, hidden_size=5, num_iter=10000):
     layer_size = (x.shape[1], hidden_size, t.shape[1])
     net = TwoLayerNet(layer_size)
 
     lr = 0.001
-    
+
     for i in range(num_iter):
         net.gradient(x, t)
-        
+
         for key in net.params.keys():
-            net.params[key] = lr*net.grad[key]
+            net.params[key] -= lr*net.grad[key]
         
-        if i%100==99:
-            print('iter', i+1, ':', net.loss)
+        if i%(num_iter//10)==0:
+            print('iter', i, ':', net.loss)
 
 if __name__=='__main__':
     input_size = 4
