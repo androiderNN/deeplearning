@@ -36,15 +36,15 @@ class ReLU():
 
 class MSE():
     def __init__(self):
-        self.x = None
+        self.y = None
         self.t = None
 
-    def forward(self, x, t):
-        self.x = x
+    def forward(self, y, t):
+        self.y = y
         self.t = t
-        out = np.sum((x-t)**2)/(2*x.shape[0])
+        out = np.sum((y-t)**2)/(2*y.shape[0])
         return out
 
     def backward(self, diff):
-        dx = diff*(self.x-self.t)/(2*self.x.shape[0])
+        dx = diff*(self.y-self.t)/(2*self.y.shape[0])
         return dx
